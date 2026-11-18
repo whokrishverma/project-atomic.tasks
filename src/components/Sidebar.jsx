@@ -7,7 +7,6 @@ import {
 import { inView } from '../lib.js'
 
 const S = 14
-
 function Nav({ icon: Icon, label, count, view, current, onPick, color, className = '' }) {
   return (
     <button className={`nav ${className} ${current === view ? 'on' : ''}`} onClick={() => onPick(view)}>
@@ -17,7 +16,6 @@ function Nav({ icon: Icon, label, count, view, current, onPick, color, className
     </button>
   )
 }
-
 // Section header (projects / notes / tags / filters) that collapses its children
 function Section({ icon: Icon, label, open, toggle, children }) {
   return (
@@ -31,12 +29,10 @@ function Section({ icon: Icon, label, open, toggle, children }) {
     </>
   )
 }
-
 function ProfileMenu({ profiles, current, onPick }) {
   const [open, setOpen] = useState(false)
   const [hintGone, setHintGone] = useState(() => localStorage.getItem('atomic.profileHint') === '1')
   const ref = useRef(null)
-
   // close on outside click or Escape
   useEffect(() => {
     if (!open) return
@@ -46,7 +42,6 @@ function ProfileMenu({ profiles, current, onPick }) {
     document.addEventListener('keydown', key)
     return () => { document.removeEventListener('mousedown', down); document.removeEventListener('keydown', key) }
   }, [open])
-
   const gotIt = () => { localStorage.setItem('atomic.profileHint', '1'); setHintGone(true) }
 
   return (
@@ -57,7 +52,6 @@ function ProfileMenu({ profiles, current, onPick }) {
         <ChevronDown size={S} className={`chev ${open ? 'up' : ''}`} />
       </button>
       <PanelLeft size={16} className="paneltoggle" />
-
       <div className={`pmenu ${open ? 'open' : ''}`} role="menu" aria-hidden={!open}>
         {profiles.map((p) => (
           <button key={p.name} role="menuitem" className="prow on" onClick={() => { onPick(p.name); setOpen(false) }}>
@@ -83,18 +77,15 @@ function ProfileMenu({ profiles, current, onPick }) {
     </div>
   )
 }
-
 export default function Sidebar({ tasks, view, setView }) {
   const c = (v) => inView(tasks, v).length
   const [profile, setProfile] = useState('personal')
   const [open, setOpen] = useState({ projects: true, notes: false, tags: true, filters: true })
   const flip = (k) => setOpen((o) => ({ ...o, [k]: !o[k] }))
   const projectCount = tasks.filter((x) => x.project && !x.done && !x.deleted).length
-
   return (
     <aside className="side">
       <ProfileMenu profiles={[{ name: 'personal', count: 1 }]} current={profile} onPick={setProfile} />
-
       <Nav icon={Inbox} label="inbox" count={c('inbox')} view="inbox" current={view} onPick={setView} color="#5b9cf5" />
       <div className="sep" style={{ margin: '6px 0' }} />
       <Nav icon={Sun} label="today" count={c('today')} view="today" current={view} onPick={setView} color="#d6b24a" />
@@ -107,7 +98,6 @@ export default function Sidebar({ tasks, view, setView }) {
         <span className="ic" style={{ color: '#c0607a' }}><Paperclip size={S} /></span>attachments
         <span className="n">{tasks.reduce((a, x) => a + (x.deleted || x.done ? 0 : x.attachments || 0), 0)}</span>
       </button>
-
       <div className="sep" />
       <Section icon={Folder} label="projects" open={open.projects} toggle={() => flip('projects')}>
         <div className="nav" style={{ fontWeight: 700, color: '#e4eaee' }}>
@@ -119,19 +109,16 @@ export default function Sidebar({ tasks, view, setView }) {
           <span className="n">{projectCount}</span>
         </div>
       </Section>
-
       <div className="sep" />
       <Section icon={StickyNote} label="notes" open={open.notes} toggle={() => flip('notes')}>
         <div className="nav"><span className="ic"><Notebook size={S} /></span>all notes<span className="n">3</span></div>
         <div className="nav"><span className="ic"><Paperclip size={S} /></span>attached notes<span className="n">0</span></div>
         <div className="nav"><span className="ic" style={{ color: '#a77bf0' }}><FolderOpen size={S} /></span>tips<span className="n">3</span></div>
       </Section>
-
       <div className="sep" />
       <Section icon={Tag} label="tags" open={open.tags} toggle={() => flip('tags')}>
         <span className="tagchip">quick</span>
       </Section>
-
       <div className="sep" style={{ marginTop: open.tags ? 10 : 8 }} />
       <Section icon={ListFilter} label="filters" open={open.filters} toggle={() => flip('filters')}>
         <Nav label="high" count={c('high')} view="high" current={view} onPick={setView} icon={() => <span className="c-red" style={{ fontWeight: 700 }}>!!!</span>} />
@@ -139,11 +126,9 @@ export default function Sidebar({ tasks, view, setView }) {
         <Nav label="low" count={c('low')} view="low" current={view} onPick={setView} icon={() => <span className="c-yel" style={{ fontWeight: 700 }}>!</span>} />
         <div className="nav"><span className="ic"><ListFilter size={S} /></span>quick wins<span className="n">2</span></div>
       </Section>
-
       <div className="sep" />
       <Nav icon={CircleCheck} label="completed" count={c('completed')} view="completed" current={view} onPick={setView} color="#3fcf9a" />
       <Nav icon={Trash2} label="trash" count={c('trash')} view="trash" current={view} onPick={setView} />
-
       <div className="gap" />
       <div className="sep" />
       <div className="nav" style={{ color: '#9aa4ab' }}><span className="ic"><CircleUser size={S} /></span>account</div>
