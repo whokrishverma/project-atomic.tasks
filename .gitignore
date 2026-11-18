@@ -1,0 +1,13 @@
+# Dependencies
+node_modules
+
+# Production build folder (jab npm run build chalayenge tab banega)
+dist
+
+# Environment variables (agar future mein API keys add karein)
+.env
+.env.local
+
+# OS & Editor files
+.DS_Store
+.vscode
