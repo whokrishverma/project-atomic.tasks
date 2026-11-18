@@ -2,9 +2,10 @@
 // To move to a database / account sync later (e.g. Supabase), replace the bodies
 // of these functions and keep their names and return shapes the same.
 
-const KEY = 'atomic.tasks.v1'
+const KEY = 'atomic.tasks.v2'
 
 const seed = () => [
+  t('click sort at the top right to give me a place', { project: null }),
   t('click me to see more details', { section: 'start here', sub: [0, 2] }),
   t('right-click me to see what you can do', { section: 'start here' }),
   t('add a task from the bar at the bottom', { section: 'start here', sub: [0, 2], date: '2026-11-18', notes: 1, tags: ['quick'] }),

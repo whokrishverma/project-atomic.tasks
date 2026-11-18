@@ -6,8 +6,10 @@ const CHIPS = [
   ['reminder', Bell], ['priority', ArrowUpNarrowWide], ['repeat', Repeat], ['attach', Paperclip],
 ]
 
-export default function QuickAdd({ onAdd, hintDismissed, dismissHint }) {
+export default function QuickAdd({ onAdd }) {
   const [text, setText] = useState('')
+  const [hintDismissed, setHintDismissed] = useState(() => localStorage.getItem('atomic.hint') === '1')
+  const dismissHint = () => { localStorage.setItem('atomic.hint', '1'); setHintDismissed(true) }
 
   const submit = () => {
     const v = text.trim()

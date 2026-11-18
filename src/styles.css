@@ -153,6 +153,23 @@
   .task:hover{background:#12171c}
   .task .m .tg{cursor:pointer;transition:background 100ms ease}
   .task .m .tg:hover{background:#1f4170}
-  .top > svg:first-child{color:#8b7bd8}
   .tagchip{cursor:pointer}
   .tagchip:hover{background:#1f4170}
+
+  /* ---------- view headers, hint cards, group heads (from screenshots) ---------- */
+  .top .sub{color:#7d8890;font-weight:400;margin-left:2px}
+  .sortchip{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:8px;background:#14302a;color:var(--green);
+    font:inherit;font-weight:700;padding:6px 10px;margin-left:2px}
+  .sortchip:hover{background:#18392f}
+  .vhint{display:flex;gap:14px;align-items:flex-start;margin:0 28px;padding:12px 18px;border:1px solid #1d252b;border-radius:12px;background:#0d1216;color:#c3ccd2}
+  .vhint > svg{margin-top:3px;flex:none}
+  .vhint p{margin:0 0 8px;line-height:1.5}
+  .gh{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;color:#e4eaee;font:inherit;font-size:15px;
+    padding:0 0 0 6px;margin:20px 0 8px;cursor:pointer;text-align:left}
+  .gh b{font-weight:700}
+  .gh em{font-style:normal;color:#7d8890;font-size:13px;margin-left:-4px}
+  .gh svg:last-child{color:#7d8890;margin-left:-4px}
+  .gh em + em{margin-left:-4px}
+  .task.flat{margin-left:0;padding-left:2px}
+  .sub1 .ring{width:13px;height:13px;border-radius:50%;background:#1f262c;display:inline-block;margin-left:2px}
+  .sub1 .k{margin-left:0}

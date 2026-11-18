@@ -18,9 +18,9 @@ export const VIEWS = {
   inbox: (x) => !x.project,
   today: (x) => x.date === todayISO(),
   planned: (x) => !!x.date,
-  anytime: (x) => !x.date,
+  anytime: (x) => !!x.project && !x.date,
   someday: () => false,
-  all: () => true,
+  all: (x) => !!x.project, // inbox tasks have no home yet, so they are not in "all tasks"
   high: (x) => x.priority === 'high',
   medium: (x) => x.priority === 'medium',
   low: (x) => x.priority === 'low',
