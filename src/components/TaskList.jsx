@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Flag, Calendar, CalendarDays, Paperclip, FileText, ListTree, GraduationCap, ChevronDown, ChevronRight, Trash2, Sun } from 'lucide-react'
-import { fmtDate, todayISO } from '../lib.js'
+import { fmtDate, todayISO, sortTasks } from '../lib.js'
 
 function Meta({ task, hideDate }) {
   const bits = []
@@ -43,8 +43,20 @@ function GroupHead({ icon: Icon, color, title, sub, count, open, toggle }) {
   )
 }
 
+// Progress pie next to a project name: the green wedge is done / total of the tasks in that project
+// (trashed tasks don't count), so it re-sizes itself as tasks are added, finished or deleted.
+function ProgressPie({ done, total }) {
+  const pct = total ? (done / total) * 100 : 0
+  return (
+    <span className="ring" role="img" aria-label={`${done} of ${total} done`} title={`${done} of ${total} done`}
+      style={{ '--p': pct.toFixed(2) }} />
+  )
+}
+
 // project -> section -> rows, keeping the original order
-function Projects({ tasks, rowProps }) {
+// `sort` orders the rows inside each section; the project and section order stays put
+// `all` is every task, so the pie can count finished ones that are hidden from the list
+function Projects({ tasks, rowProps, sort, all }) {
   const projects = new Map()
   for (const t of tasks) {
     const p = t.project || null
@@ -61,7 +73,10 @@ function Projects({ tasks, rowProps }) {
           <div className="proj"><Flag size={15} />{project}</div>
           <div className="sub1">
             <GraduationCap size={14} />learn init.Tasks
-            <span className="ring" />
+            <ProgressPie
+              done={all.filter((x) => x.project === project && !x.deleted && x.done).length}
+              total={all.filter((x) => x.project === project && !x.deleted).length}
+            />
             <span className="k">{tasks.filter((x) => x.project === project).length} <ChevronDown size={12} style={{ display: 'inline', verticalAlign: -2 }} /></span>
           </div>
         </>
@@ -70,24 +85,25 @@ function Projects({ tasks, rowProps }) {
         <div key={section || 'none'}>
           {section && <div className="grp">{section} <em>{rows.length}</em></div>}
           {!section && <div style={{ height: 8 }} />}
-          {rows.map((t) => <Row key={t.id} task={t} {...rowProps} />)}
+          {sortTasks(rows, sort).map((t) => <Row key={t.id} task={t} {...rowProps} />)}
         </div>
       ))}
     </div>
   ))
 }
 
-export default function TaskList({ tasks, onToggle, onRemove, onPurge, view }) {
+export default function TaskList({ tasks, onToggle, onRemove, onPurge, view, sort = 'manual', dim = false, emptyText, all = tasks }) {
   const [shut, setShut] = useState({})
   const flip = (k) => setShut((s) => ({ ...s, [k]: !s[k] }))
 
-  if (!tasks.length) return <div className="list"><div className="empty-list">nothing here yet</div></div>
+  const cls = `list ${dim ? 'dim' : ''}`
+  if (!tasks.length) return <div className={cls}><div className="empty-list">{emptyText || 'nothing here yet'}</div></div>
 
   const rowProps = { onToggle, onRemove, onPurge, inTrash: view === 'trash', hideDate: view === 'today' || view === 'planned' }
 
   let body
   if (view === 'inbox') {
-    const rows = [...tasks].sort((a, b) => a.createdAt - b.createdAt)
+    const rows = sort === 'manual' ? [...tasks].sort((a, b) => a.createdAt - b.createdAt) : sortTasks(tasks, sort)
     body = (
       <>
         <GroupHead icon={ListTree} color="#8b7bd8" title="tasks" count={rows.length} open={!shut.inbox} toggle={() => flip('inbox')} />
@@ -98,7 +114,7 @@ export default function TaskList({ tasks, onToggle, onRemove, onPurge, view }) {
     body = (
       <>
         <GroupHead icon={Sun} color="#d6b24a" title="today" count={tasks.length} open={!shut.today} toggle={() => flip('today')} />
-        {!shut.today && <Projects tasks={tasks} rowProps={rowProps} />}
+        {!shut.today && <Projects tasks={tasks} rowProps={rowProps} sort={sort} all={all} />}
       </>
     )
   } else if (view === 'planned') {
@@ -109,13 +125,13 @@ export default function TaskList({ tasks, onToggle, onRemove, onPurge, view }) {
         <div key={d}>
           <GroupHead icon={CalendarDays} color="#d6a23a" title={fmtDate(d)} sub={d === todayISO() ? 'today' : null}
             count={rows.length} open={!shut[d]} toggle={() => flip(d)} />
-          {!shut[d] && <Projects tasks={rows} rowProps={rowProps} />}
+          {!shut[d] && <Projects tasks={rows} rowProps={rowProps} sort={sort} all={all} />}
         </div>
       )
     })
   } else {
-    body = <Projects tasks={tasks} rowProps={rowProps} />
+    body = <Projects tasks={tasks} rowProps={rowProps} sort={sort} all={all} />
   }
 
-  return <div className="list">{body}</div>
+  return <div className={cls}>{body}</div>
 }

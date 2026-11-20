@@ -8,10 +8,10 @@ const seed = () => [
   t('click sort at the top right to give me a place', { project: null }),
   t('click me to see more details', { section: 'start here', sub: [0, 2] }),
   t('right-click me to see what you can do', { section: 'start here' }),
-  t('add a task from the bar at the bottom', { section: 'start here', sub: [0, 2], date: '2026-11-18', notes: 1, tags: ['quick'] }),
-  t('plan with dates and deadlines', { section: 'go further', sub: [0, 3], deadline: '2026-11-25', notes: 1 }),
-  t('group tasks with tags', { section: 'go further', sub: [0, 2], tags: ['quick'] }),
-  t('find tasks with filters and priority', { section: 'go further', sub: [0, 2], priority: 'high' }),
+  t('add a task from the bar at the bottom', { section: 'start here', sub: [0, 2], date: '2026-11-18', notes: 1, tags: ['quick'], length: 15 }),
+  t('plan with dates and deadlines', { section: 'go further', sub: [0, 3], deadline: '2026-11-25', notes: 1, reminder: true }),
+  t('group tasks with tags', { section: 'go further', sub: [0, 2], tags: ['quick'], length: 30 }),
+  t('find tasks with filters and priority', { section: 'go further', sub: [0, 2], priority: 'high', length: 60 }),
   t('keep notes and files with your tasks', { section: 'go further', sub: [0, 3], attachments: 2, notes: 1 }),
   t('keep parts of your life apart with profiles', { section: 'go further', sub: [0, 2] }),
   t('sync your devices', { section: 'wrap up', sub: [0, 2] }),
@@ -34,6 +34,8 @@ function t(title, extra = {}) {
     sub: null, // [done, total]
     attachments: 0,
     notes: 0,
+    length: null, // minutes
+    reminder: false,
     createdAt: Date.now() + n,
     ...extra,
   }
@@ -44,7 +46,10 @@ function read() {
     const raw = localStorage.getItem(KEY)
     if (raw) return JSON.parse(raw)
   } catch {}
-  return seed()
+  // first run: save the seed so its ids stay the same (otherwise the first edit finds no matching task)
+  const first = seed()
+  write(first)
+  return first
 }
 
 function write(tasks) {
@@ -73,6 +78,8 @@ export async function addTask(title) {
     sub: null,
     attachments: 0,
     notes: 0,
+    length: null,
+    reminder: false,
     createdAt: Date.now(),
   }
   write([...tasks, task])
